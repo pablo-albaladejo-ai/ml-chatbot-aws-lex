@@ -3,6 +3,13 @@
 *.d.ts
 node_modules
 
+/config/app-config.json
+
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+cdk-outputs.json
+backend-outputs.json
+backend-template.yaml
+frontend-outputs.json
+frontend-template.yaml
