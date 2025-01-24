@@ -19,13 +19,14 @@ import ChatIcon from "@mui/icons-material/Chat";
 
 interface Message {
   text: string;
-  sender: "bot" | "user";
+  sender: "bot" | "user" | "typing";
 }
 
 const Chatbot: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [botTyping, setBotTyping] = useState<boolean>(false);
   const [hasOlderMessages, setHasOlderMessages] = useState(false);
 
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -57,25 +58,32 @@ const Chatbot: React.FC = () => {
     e.preventDefault();
     if (message.trim()) {
       setMessages([...messages, { text: message, sender: "user" }]);
-        try {
-          const response = await axios.post(`${API_URL}/chatbot`, { message });
-          if (response.status === 200) {
-            const botResponse = response.data.botResponse;
-            setMessages([
-              ...messages,
-              { text: message, sender: "user" },
-              { text: botResponse, sender: "bot" },
-            ]);
-          } else {
-            console.error('Error:', response.status);
-          }
-        } catch (error) {
-          console.error('Error:', error);
+      setMessage("");
+      setBotTyping(true);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: "⋯", sender: "typing" },
+      ]);
+
+      try {
+        const response = await axios.post(`${API_URL}/chatbot`, { message });
+        if (response.status === 200) {
+          const botResponse = response.data.botResponse;
+          setMessages((prevMessages) =>
+            prevMessages
+              .filter((msg) => msg.sender !== "typing") 
+              .concat({ text: botResponse, sender: "bot" })
+          );
+        } else {
+          console.error("Error:", response.status);
         }
-    
-        setMessage("");
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setBotTyping(false); // Bot deja de "escribir"
       }
-    };
+    }
+  };
 
   return (
     <>
@@ -108,24 +116,36 @@ const Chatbot: React.FC = () => {
                 />
               </ListItem>
             )}
-          {messages.map((msg, index) => (
-            <ListItem
-              key={index}
-              ref={index === messages.length - 1 ? lastMessageRef : null}
-              className={msg.sender === "user" ? "user-message" : "bot-message"}
-            >
-              <ListItemText
-                primary={
-                  <Typography
-                    variant="body1"
-                    color={msg.sender === "bot" ? "primary" : "textPrimary"}
-                  >
-                    {msg.text}
-                  </Typography>
+            {messages.map((msg, index) => (
+              <ListItem
+                key={index}
+                ref={index === messages.length - 1 ? lastMessageRef : null}
+                className={
+                  msg.sender === "user"
+                    ? "user-message"
+                    : msg.sender === "bot"
+                    ? "bot-message"
+                    : "typing-message"
                 }
-              />
-            </ListItem>
-          ))}
+              >
+                <ListItemText
+                  primary={
+                    <Typography
+                      variant="body1"
+                      color={
+                        msg.sender === "bot"
+                          ? "primary"
+                          : msg.sender === "user"
+                          ? "textPrimary"
+                          : "textSecondary"
+                      }
+                    >
+                      {msg.text}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            ))}
           </List>
           <form onSubmit={handleSubmit}>
             <TextField
@@ -136,8 +156,14 @@ const Chatbot: React.FC = () => {
               fullWidth
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              disabled={botTyping}
             />
-            <Button type="submit" variant="contained" color="primary">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={botTyping}
+            >
               Send
             </Button>
           </form>

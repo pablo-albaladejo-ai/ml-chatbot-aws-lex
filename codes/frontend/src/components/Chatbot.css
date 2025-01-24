@@ -1,7 +1,6 @@
 .chatbot-icon {
     position: relative;
   }
-  
 
   .user-message {
     text-align: left;
@@ -14,7 +13,6 @@
     margin-left: auto;
     margin-bottom: 0.5rem;
   }
-
 
   .user-message .MuiListItemText-root {
     text-align: left;
@@ -38,9 +36,14 @@
   }
 
   .message-list {
-  max-height: 300px; 
-  overflow-y: auto;
-}
+    max-height: 300px; 
+    overflow-y: auto;
+  }
+
+  .typing-message {
+    font-style: italic;
+    color: gray;
+  }
   
   @keyframes pulseAnimation {
     0% {
