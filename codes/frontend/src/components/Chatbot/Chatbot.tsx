@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Chatbot.css";
-import axios from 'axios';
+import axios from "axios";
 import { API_URL } from "../../configs/configs";
 
 import {
@@ -31,6 +31,7 @@ const Chatbot: React.FC = () => {
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const lastMessageRef = useRef<HTMLLIElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (listRef.current) {
@@ -44,6 +45,12 @@ const Chatbot: React.FC = () => {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus(); // Mantener el foco en el campo de texto después de cada cambio en mensajes
+    }
+  }, [messages, botTyping]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -71,7 +78,7 @@ const Chatbot: React.FC = () => {
           const botResponse = response.data.botResponse;
           setMessages((prevMessages) =>
             prevMessages
-              .filter((msg) => msg.sender !== "typing") 
+              .filter((msg) => msg.sender !== "typing")
               .concat({ text: botResponse, sender: "bot" })
           );
         } else {
@@ -80,7 +87,7 @@ const Chatbot: React.FC = () => {
       } catch (error) {
         console.error("Error:", error);
       } finally {
-        setBotTyping(false); // Bot deja de "escribir"
+        setBotTyping(false);
       }
     }
   };
@@ -157,6 +164,7 @@ const Chatbot: React.FC = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               disabled={botTyping}
+              inputRef={inputRef}
             />
             <Button
               type="submit"

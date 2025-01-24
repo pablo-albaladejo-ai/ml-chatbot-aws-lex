@@ -7,6 +7,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   useEffect(() => {
     checkAuthState();
@@ -18,6 +19,8 @@ const Header = () => {
       setIsSignedIn(true);
     } catch (error) {
       setIsSignedIn(false);
+    } finally {
+      setIsAuthChecked(true);
     }
   };
 
@@ -36,6 +39,10 @@ const Header = () => {
   };
 
   const renderButtons = () => {
+    if (!isAuthChecked) {
+      return null;
+    }
+
     if (location.pathname === "/login") {
       return (
         <Button color="inherit" onClick={() => handleNavigation("/")}>
