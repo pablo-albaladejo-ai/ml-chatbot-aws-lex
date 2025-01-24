@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Meeting } from "../types/types";
-import { API_URL } from "../configs/configs";
+import { Meeting } from "../../types/types";
+import { API_URL } from "../../configs/configs";
 import axios from "axios";
 import {
   Table,
@@ -24,7 +24,7 @@ interface ListPendingMeetingsProps {
   onMeetingsUpdate: () => void;
 }
 
-const ListPendingMeetings = ({
+export const ListPendingMeetings = ({
   onMeetingsUpdate,
 }: ListPendingMeetingsProps) => {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
@@ -168,5 +168,3 @@ const ListPendingMeetings = ({
     </div>
   );
 };
-
-export default ListPendingMeetings;

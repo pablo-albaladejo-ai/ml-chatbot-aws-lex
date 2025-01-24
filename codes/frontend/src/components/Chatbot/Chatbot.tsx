@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Chatbot.css";
 import axios from 'axios';
-import { API_URL } from "../configs/configs";
+import { API_URL } from "../../configs/configs";
 
 import {
   Fab,

@@ -1,6 +1,6 @@
 import React from "react";
-import "./HomePage.css";
-import Chatbot from "../components/Chatbot";
+import "./Home.css";
+import Chatbot from "../../components/Chatbot/Chatbot";
 import { Typography, Container, Box } from "@mui/material";
 
 const HomePage: React.FC = () => {

@@ -1,5 +1,4 @@
-import MeetingCalendar from "../components/MeetingCalendar";
-import ListPendingMeetings from "../components/ListPendingMeetings";
+import { MeetingCalendar, ListPendingMeetings } from "../../components/Meeting";
 import { useState } from "react";
 import {  Box, Typography } from "@mui/material";
 const AdminPage = () => {

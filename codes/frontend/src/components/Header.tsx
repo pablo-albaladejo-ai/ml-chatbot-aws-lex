@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { signOut, getCurrentUser } from "aws-amplify/auth";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSignedIn, setIsSignedIn] = useState(false);
 
   useEffect(() => {
     checkAuthState();
   }, []);
-
-
 
   const checkAuthState = async () => {
     try {
@@ -32,12 +31,50 @@ const Header = () => {
     }
   }
 
-  const handleSignInOut = () => {
-    if (isSignedIn) {
-      handleSignOut();
-    } else {
-      navigate("/admin");
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
+  const renderButtons = () => {
+    if (location.pathname === "/login") {
+      return (
+        <Button color="inherit" onClick={() => handleNavigation("/")}>
+          Home
+        </Button>
+      );
     }
+
+    if (location.pathname === "/admin") {
+      return (
+        <>
+          <Button color="inherit" onClick={() => handleNavigation("/")}>
+            Home
+          </Button>
+          <Button color="inherit" onClick={handleSignOut}>
+            Logout
+          </Button>
+        </>
+      );
+    }
+
+    if (location.pathname === "/" && isSignedIn) {
+      return (
+        <>
+          <Button color="inherit" onClick={() => handleNavigation("/admin")}>
+            Admin
+          </Button>
+          <Button color="inherit" onClick={handleSignOut}>
+            Logout
+          </Button>
+        </>
+      );
+    }
+
+    return (
+      <Button color="inherit" onClick={() => handleNavigation("/login")}>
+        Login
+      </Button>
+    );
   };
 
   return (
@@ -46,9 +83,7 @@ const Header = () => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Chapter 7 - Meety the Chatbot
         </Typography>
-        <Button color="inherit" onClick={handleSignInOut}>
-          {isSignedIn ? "Sign Out" : "Sign In"}
-        </Button>
+        {renderButtons()}
       </Toolbar>
     </AppBar>
   );

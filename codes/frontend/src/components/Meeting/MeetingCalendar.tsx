@@ -4,8 +4,8 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import axios from "axios";
 import { CircularProgress, Typography } from "@mui/material";
-import { Meeting, Event } from "../types/types";
-import { API_URL } from "../configs/configs";
+import { Meeting, Event } from "../../types/types";
+import { API_URL } from "../../configs/configs";
 import { fetchAuthSession } from "aws-amplify/auth";
 const localizer = momentLocalizer(moment);
 
@@ -13,7 +13,7 @@ interface MeetingCalendarProps {
   meetingsUpdated: boolean;
 }
 
-const MeetingCalendar = ({ meetingsUpdated }: MeetingCalendarProps) => {
+export const MeetingCalendar = ({ meetingsUpdated }: MeetingCalendarProps) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewDate, setViewDate] = useState<Date>(new Date());
@@ -112,5 +112,3 @@ const MeetingCalendar = ({ meetingsUpdated }: MeetingCalendarProps) => {
     </div>
   );
 };
-
-export default MeetingCalendar;
