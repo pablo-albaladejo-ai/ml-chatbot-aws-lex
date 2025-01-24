@@ -11,10 +11,9 @@ export class BackendStack extends BaseStack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-
     // DynamoDB Table
     const meetingsTable = new dynamodb.Table(this, 'MeetingsTable', {
-      tableName: 'Meetings',
+      tableName: `${this.appName}Meetings`,
       partitionKey: { name: 'meetingId', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -56,20 +55,20 @@ export class BackendStack extends BaseStack {
 
     const userPoolClient = new cognito.UserPoolClient(this, 'CognitoUserPoolClient', {
       userPool,
-      userPoolClientName: 'ml-chatbot-aws-lex-user-pool-client',
+      userPoolClientName: `${this.appName}-user-pool-client`.toLowerCase(),
       generateSecret: false,
     });
 
     // User Pool User
     new cognito.CfnUserPoolUser(this, 'CognitoUserPoolUser', {
       userPoolId: userPool.userPoolId,
-      username: this.node.tryGetContext('userEmail'),
+      username: this.config.enviroment.useremail,
       desiredDeliveryMediums: ['EMAIL'],
       forceAliasCreation: true,
       userAttributes: [
         {
           name: 'email',
-          value: this.node.tryGetContext('userEmail'),
+          value: this.config.enviroment.useremail,
         },
         {
           name: 'email_verified',
@@ -91,23 +90,22 @@ export class BackendStack extends BaseStack {
       meetyBotAlias: meetyBot.botAlias,
     });
 
-
     new cdk.CfnOutput(this, 'ApiGatewayUrl', {
       value: chatbotApi.httpApi.url!,
       description: 'The URL of the HTTP API',
-      exportName: 'ApiGatewayUrl',
+      exportName: `${this.appName}ApiGatewayUrl`,
     });
 
     new cdk.CfnOutput(this, 'CognitoUserPoolId', {
       value: userPool.userPoolId,
       description: 'The ID of the Cognito User Pool',
-      exportName: 'CognitoUserPoolId',
+      exportName: `${this.appName}CognitoUserPoolId`,
     });
+
     new cdk.CfnOutput(this, 'CognitoUserPoolClientId', {
       value: userPoolClient.userPoolClientId,
       description: 'The ID of the Cognito User Pool Client',
-      exportName: 'CognitoUserPoolClientId',
+      exportName: `${this.appName}CognitoUserPoolClientId`,
     });
-
   }
 }

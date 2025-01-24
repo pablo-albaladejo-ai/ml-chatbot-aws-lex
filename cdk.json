@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts infra/ml-chatbot-aws-lex-app.ts",
+  "app": "npx ts-node --prefer-ts-exts infra/App.ts",
   "watch": {
     "include": [
       "**"

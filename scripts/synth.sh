@@ -3,17 +3,15 @@ set -e  # Exit immediately if a command exits with a non-zero status.
 
 # Configuration File Path
 export APP_CONFIG=$1
+echo "Using configuration file: $APP_CONFIG"
 
-USER_EMAIL=$(cat $APP_CONFIG | jq -r '.Project.UserEmail')
-export AWS_PROFILE=$(cat $APP_CONFIG | jq -r '.Project.Profile')
-
-# Set the AWS profile
-AWS_REGION=$(aws configure get region)
-echo "AWS Region: $AWS_REGION"
+export AWS_PROFILE=$(cat $APP_CONFIG | jq -r '.aws.profile')
+export AWS_REGION=$(cat $APP_CONFIG | jq -r '.aws.region')
+PREFIX=$(cat $APP_CONFIG | jq -r '.app.name')
 
 # Synth backend stack
 echo "Synthesizing backend stack..."
-cdk synth BackendStack -c userEmail=$USER_EMAIL > backend-template.yaml
+cdk synth "${PREFIX}BackendStack" -c configFilePath=$APP_CONFIG > backend-template.yaml
 
 if [ $? -eq 0 ]; then
     echo "Backend stack synthesized successfully: backend-template.yaml"
@@ -24,7 +22,7 @@ fi
 
 # Synth frontend stack
 echo "Synthesizing frontend stack..."
-cdk synth FrontendStack > frontend-template.yaml
+cdk synth "${PREFIX}FrontendStack" -c configFilePath=$APP_CONFIG > frontend-template.yaml
 
 if [ $? -eq 0 ]; then
     echo "Frontend stack synthesized successfully: frontend-template.yaml"

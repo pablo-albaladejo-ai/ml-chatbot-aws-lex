@@ -3,22 +3,20 @@ set -e  # Exit immediately if a command exits with a non-zero status.
 
 # Configuration File Path
 export APP_CONFIG=$1
+echo "Using configuration file: $APP_CONFIG"
 
-USER_EMAIL=$(cat $APP_CONFIG | jq -r '.Project.UserEmail')
-export AWS_PROFILE=$(cat $APP_CONFIG | jq -r '.Project.Profile')
-
-# Set the AWS profile
-AWS_REGION=$(aws configure get region)
-echo "AWS Region: $AWS_REGION"
+export AWS_PROFILE=$(cat $APP_CONFIG | jq -r '.aws.profile')
+export AWS_REGION=$(cat $APP_CONFIG | jq -r '.aws.region')
+PREFIX=$(cat $APP_CONFIG | jq -r '.app.name')
 
 # Deploy the backend stack
 echo "Deploying backend stack..."
-cdk deploy BackendStack -c userEmail=$USER_EMAIL --outputs-file backend-outputs.json
+cdk deploy "${PREFIX}BackendStack" -c configFilePath=$APP_CONFIG --outputs-file backend-outputs.json
 
 # Get the backend values
-API_URL=$(jq -r '.BackendStack.ApiGatewayUrl' backend-outputs.json | sed 's:/$::')
-COGNITO_USER_POOL_ID=$(jq -r '.BackendStack.CognitoUserPoolId' backend-outputs.json)
-COGNITO_APP_CLIENT_ID=$(jq -r '.BackendStack.CognitoUserPoolClientId' backend-outputs.json)
+API_URL=$(jq -r ".\"${PREFIX}BackendStack\".ApiGatewayUrl" backend-outputs.json | sed 's:/$::')
+COGNITO_USER_POOL_ID=$(jq -r ".\"${PREFIX}BackendStack\".CognitoUserPoolId" backend-outputs.json)
+COGNITO_APP_CLIENT_ID=$(jq -r ".\"${PREFIX}BackendStack\".CognitoUserPoolClientId" backend-outputs.json)
 
 # Verify that the values are not empty
 if [ -z "$API_URL" ] || [ -z "$COGNITO_USER_POOL_ID" ] || [ -z "$COGNITO_APP_CLIENT_ID" ]; then
@@ -50,6 +48,6 @@ cd ../..
 
 # Deploy the frontend stack
 echo "Deploying frontend stack..."
-cdk deploy FrontendStack --outputs-file frontend-outputs.json
+cdk deploy "${PREFIX}FrontendStack" -c configFilePath=$APP_CONFIG --outputs-file frontend-outputs.json
 
 echo "Deployment completed successfully."

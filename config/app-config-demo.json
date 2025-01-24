@@ -1,6 +1,14 @@
 {
-    "Project": {
-        "UserEmail": "user@example.com",
-        "Profile": "my-aws-cli-profile"
+    "app": {
+        "name": "Meety",
+        "project": "ml-chatbot-aws-lex",
+        "group": "ai-projects"
+    },
+    "aws": {
+        "region": "eu-west-1",
+        "profile": "my-aws-cli-profile"
+    },
+    "enviroment": {
+        "useremail": "user@example.com"
     }
 }
