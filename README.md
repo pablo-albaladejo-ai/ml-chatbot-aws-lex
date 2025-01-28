@@ -48,50 +48,57 @@ npm install
 ```
 
 ### 3. Configure AWS Credentials
-
-Ensure your AWS credentials are set up correctly by running:
-
-```bash
-aws configure
-```
-
-### 4. Deploy the CDK Stack
-
-Deploy the infrastructure using the AWS CDK:
+Ensure your AWS credentials are set up correctly by configuring a profile. To do so, run:
 
 ```bash
-cdk deploy
+aws configure --profile <profile-name>
+```
+Refer to the official AWS documentation for detailed instructions on setting up credentials:
+
+AWS CLI Configuration and Credential Files
+The profile configured in the AWS CLI must match the profile specified in the project configuration file (config/app-config.json).
+
+### 4. Configuration File
+The app-config-demo.json file contains environment-specific parameters consumed by the scripts in the scripts folder. Customize its fields (e.g., AWS region, stack name, etc.) to match your environment and deployment preferences.
+
+Example:
+
+```json
+{
+    "app": {
+        "name": "Meety",
+        "project": "ml-chatbot-aws-lex",
+        "group": "ai-projects"
+    },
+    "aws": {
+        "region": "eu-west-1",
+        "profile": "ml-chatbot-aws-lex"  // Ensure this matches the configured AWS CLI profile
+    },
+    "enviroment": {
+        "useremail": "pablofdi@gmail.com"
+    }
+}
 ```
 
-### 5. Access the Chatbot
+### 5. Deploy the CDK Stack
+
+You can run the following scripts to interact with the CDK stack:
+
+```bash
+# Generate (synthesize) the CloudFormation templates
+sh ./scripts/synth.sh config/app-config-demo.json
+
+# Deploy the infrastructure using the specified configuration
+sh ./scripts/deploy.sh config/app-config-demo.json
+
+# Remove the deployed stack and all associated resources
+sh ./scripts/destroy.sh config/app-config-demo.json
+```
+
+### 6. Access the Chatbot
 
 After deployment, you will receive the CloudFront distribution URL. Use this URL to access the chatbot frontend.
 
-## Testing
-
-### Unit Tests
-
-Run unit tests for the Lambda functions:
-
-```bash
-npm test
-```
-
-### Infrastructure Validation
-
-Verify the deployed resources using the AWS CLI or AWS Console.
-
-```bash
-aws cloudformation describe-stacks --stack-name Chapter7Stack
-```
-
-## Cleaning Up
-
-To remove all resources, run:
-
-```bash
-cdk destroy
-```
 
 ## Future Enhancements
 
